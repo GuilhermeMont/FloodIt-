@@ -16,7 +16,7 @@ public class FloodIt {
 			 s = new Scanner(f);
 		}
 		catch(FileNotFoundException ex) {
-			System.out.println("Arquivo não encontrado " + ex.getStackTrace());
+			System.out.println("Arquivo nï¿½o encontrado " + ex.getStackTrace());
 		}
 
 		//Instancias no formato
@@ -34,3 +34,6 @@ class Edge{
 class Vertex {
 	private Integer color;
 }
+
+
+// Testando se o commit deu 
