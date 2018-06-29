@@ -12,10 +12,13 @@ public class FloodIt {
 		List<Vertex> all_vertexes = new ArrayList<Vertex>();
 		List<Edge> all_edges = new ArrayList<Edge>();
 		
-		Graph g = preProcessing(all_vertexes, all_edges);	
+		preProcessing(all_vertexes, all_edges);	
+		Graph g = new Graph(all_edges, all_vertexes);
+		
+		g.printGraph();
 	}
 	
-	private static Graph preProcessing(List<Vertex> list_vertex, List<Edge> list_edge) {
+	private static void preProcessing(List<Vertex> list_vertex, List<Edge> list_edge) {
 		final String path = "resources/instances.txt";
 		File f = new File(path);
 		Scanner s = null;
@@ -26,7 +29,6 @@ public class FloodIt {
 			System.out.println("Arquivo não encontrado");
 		}
 
-		/* Inicio da leitura do arquivo*/
 		Integer n = s.nextInt(), m = s.nextInt(), c = s.nextInt(), p = s.nextInt();
 		
 		for(int i = 0; i < n; i++) {
@@ -36,30 +38,10 @@ public class FloodIt {
 		for (int i = 0; i < m; i++) {
 			list_edge.add(new Edge(s.nextInt(), s.nextInt()));
 		}
-		
-		/* Fim da leitura do arquivo*/
-		Graph g = new Graph();
-
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				if (list_edge.get(j).getOrigin() == list_vertex.get(i).getFlag()) {
-					list_vertex.get(i).getAdjacencies().add(list_edge.get(j));
-				}
-			}
-			g.getAll_vertexes().add(list_vertex.get(i));
-		}
-		
-		//testes
-		for (int i = 0; i < n; i++) {
-			System.out.println(list_vertex.get(i).getFlag());
-			System.out.println(list_vertex.get(i).getAdjacencies());
-		}
-		return g;
 	}
 }
 
 class Edge{
-	
 	private Integer origin;
 	private Integer destination;
 	
@@ -86,7 +68,7 @@ class Edge{
 
 	@Override
 	public String toString() {
-		return "Aresta [origem=" + origin + ", destino=" + destination + "]";
+		return "Aresta (origem = " + origin + ", destino = " + destination + ")";
 	}
 }
 
@@ -94,7 +76,7 @@ class Vertex {
 	
 	private Integer flag;
 	private Integer color;
-	LinkedList<Edge> adjacencies = new LinkedList<Edge>();
+	private LinkedList<Edge> adjacencies = new LinkedList<Edge>();
 	
 	public Vertex(Integer flag, Integer color) {
 		this.flag = flag;
@@ -127,14 +109,33 @@ class Vertex {
 
 	@Override
 	public String toString() {
-		return "Vertice [rótulo =" + flag + ", cor =" + color + "]";
+		return "Vertice [rótulo = " + flag + ", cor = " + color + ", adjacências = " +  adjacencies +"]";
 	}
 }
 
 class Graph {
-	HashSet<Vertex> all_vertexes = new HashSet<Vertex>();
-
+	private HashSet<Vertex> all_vertexes = new HashSet<Vertex>();
+	private HashSet<Region> all_regions = new HashSet<Region>();
+	
 	public Graph() { 	}
+	
+	public Graph (List<Edge> list_edge, List<Vertex> list_vertex) {
+		for (int i = 0; i < list_vertex.size(); i++) {
+			for (int j = 0; j < list_edge.size(); j++) {
+				if (list_edge.get(j).getOrigin() == list_vertex.get(i).getFlag()) {
+					list_vertex.get(i).getAdjacencies().add(list_edge.get(j));
+				}
+			}
+			this.getAll_vertexes().add(list_vertex.get(i));
+		}
+		
+		for (int i = 0; i < list_vertex.size(); i++) {
+			for (int j = 0; j < list_vertex.get(i).getAdjacencies().size(); j++) {
+				Region r = new Region();
+				//vertices da mesma cor entram na mesma região
+			}
+		}
+	}
 
 	public HashSet<Vertex> getAll_vertexes() {
 		return all_vertexes;
@@ -142,5 +143,34 @@ class Graph {
 
 	public void setAll_vertexes(HashSet<Vertex> all_vertexes) {
 		this.all_vertexes = all_vertexes;
+	}
+	
+	public HashSet<Region> getAll_regions() {
+		return all_regions;
+	}
+
+	public void setAll_regions(HashSet<Region> all_regions) {
+		this.all_regions = all_regions;
+	}
+
+	public void printGraph() {
+		for (Vertex v : all_vertexes) {
+			System.out.println(v);
+		}
+	}
+}
+
+class Region {
+	private HashSet<Vertex> regionVertexes = new HashSet<Vertex>();
+	private Integer color;
+	
+	Region() {  }
+
+	public HashSet<Vertex> getRegionVertexes() {
+		return regionVertexes;
+	}
+
+	public void setRegionVertexes(HashSet<Vertex> regionVertexes) {
+		this.regionVertexes = regionVertexes;
 	}
 }
