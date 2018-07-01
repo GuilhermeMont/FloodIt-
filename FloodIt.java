@@ -9,13 +9,14 @@ import java.util.Scanner;
 
 public class FloodIt {
 	public static void main(String[] args) throws IOException{
-		List<Vertex> all_vertexes = new ArrayList<Vertex>();
-		List<Edge> all_edges = new ArrayList<Edge>();
+		ArrayList<Vertex> all_vertexes = new ArrayList<Vertex>();
+		ArrayList<Edge> all_edges = new ArrayList<Edge>();
 		
 		preProcessing(all_vertexes, all_edges);	
 		Graph g = new Graph(all_edges, all_vertexes);
 		
 		g.printGraph();
+		
 	}
 	
 	private static void preProcessing(List<Vertex> list_vertex, List<Edge> list_edge) {
@@ -72,8 +73,7 @@ class Edge{
 	}
 }
 
-class Vertex {
-	
+class Vertex {	
 	private Integer flag;
 	private Integer color;
 	private LinkedList<Edge> adjacencies = new LinkedList<Edge>();
@@ -113,26 +113,58 @@ class Vertex {
 	}
 }
 
+class Region {
+	private HashSet<Vertex> regionVertexes = new HashSet<Vertex>();
+	private Integer color;
+	
+	Region(Integer color) {  
+		this.color = color;
+	}
+
+	public HashSet<Vertex> getRegionVertexes() {
+		return regionVertexes;
+	}
+
+	public void setRegionVertexes(HashSet<Vertex> regionVertexes) {
+		this.regionVertexes = regionVertexes;
+	}
+
+	@Override
+	public String toString() {
+		return "Region [Vertices da regiao = " + regionVertexes + ", cor = " + color + "]";
+	}
+}
+
 class Graph {
 	private HashSet<Vertex> all_vertexes = new HashSet<Vertex>();
 	private HashSet<Region> all_regions = new HashSet<Region>();
 	
 	public Graph() { 	}
 	
-	public Graph (List<Edge> list_edge, List<Vertex> list_vertex) {
+	public Graph (ArrayList<Edge> list_edge, ArrayList<Vertex> list_vertex) {
+		//Construcao das adjacencias 
 		for (int i = 0; i < list_vertex.size(); i++) {
 			for (int j = 0; j < list_edge.size(); j++) {
-				if (list_edge.get(j).getOrigin() == list_vertex.get(i).getFlag()) {
+				if (list_edge.get(j).getOrigin() == list_vertex.get(i).getFlag()
+						|| list_edge.get(j).getDestination() == list_vertex.get(i).getFlag()) {
 					list_vertex.get(i).getAdjacencies().add(list_edge.get(j));
 				}
 			}
 			this.getAll_vertexes().add(list_vertex.get(i));
 		}
 		
+		//Construcao das regioes de cores
 		for (int i = 0; i < list_vertex.size(); i++) {
+			Region newRegion = new Region(list_vertex.get(i).getColor());
+			this.all_regions.add(newRegion);
 			for (int j = 0; j < list_vertex.get(i).getAdjacencies().size(); j++) {
-				Region r = new Region();
-				//vertices da mesma cor entram na mesma região
+					if (list_vertex.get(i).getAdjacencies().get(j).getOrigin() == list_vertex.get(i).getFlag()
+							|| list_vertex.get(i).getAdjacencies().get(j).getDestination() 
+								== list_vertex.get(i).getFlag()) {
+						if (list_vertex.get(j).getColor() == list_vertex.get(i).getColor()) {
+							newRegion.getRegionVertexes().add(list_vertex.get(j));
+					}
+				}
 			}
 		}
 	}
@@ -157,20 +189,10 @@ class Graph {
 		for (Vertex v : all_vertexes) {
 			System.out.println(v);
 		}
+		
+		for (Region r : all_regions) {
+			System.out.println(r);
+		}
 	}
 }
 
-class Region {
-	private HashSet<Vertex> regionVertexes = new HashSet<Vertex>();
-	private Integer color;
-	
-	Region() {  }
-
-	public HashSet<Vertex> getRegionVertexes() {
-		return regionVertexes;
-	}
-
-	public void setRegionVertexes(HashSet<Vertex> regionVertexes) {
-		this.regionVertexes = regionVertexes;
-	}
-}
